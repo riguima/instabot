@@ -24,31 +24,70 @@ class Browser:
             options=options,
         )
 
-    def post_story(self, media_path: str) -> None:
-        url = 'chrome-extension://bcocdbombenodlegijagbhdjbifpiijp/inssist.html'
-        if self.driver.current_url != url:
-            self.driver.get(url)
-            sleep(25)
-        self.lazy_click('elements-images/plus-button.png')
-        self.lazy_click('elements-images/story-button.png')
+    def post_story(self, media_path: str, mentions: list[str] = []) -> None:
+        while True:
+            try:
+                self.lazy_click('elements-images/plus-button.png', 0.9)
+            except:
+                break
+            while True:
+                try:
+                    self.lazy_click('elements-images/story-button.png', 0.7)
+                    sleep(3)
+                    break
+                except:
+                    continue
         pyautogui.hotkey('ctrl', 'l')
         pyautogui.write(media_path)
         pyautogui.press('enter')
-
-    def lazy_click(self, image_path: str) -> None:
-        center = pyautogui.center(
-            pyautogui.locateOnScreen(
-                image_path, confidence=0.7
+        for e, mention in enumerate(mentions):
+            while True:
+                try:
+                    arroba_position = self.lazy_click('elements-images/arroba-button.png', 0.6)
+                    break
+                except:
+                    sleep(1)
+            if e == 0:
+                pyautogui.write(mention)
+            else:
+                pyautogui.press('enter')
+                pyautogui.write(f'@{mention}')
+            sleep(1)
+            pyautogui.click(arroba_position.left - 200, arroba_position.top)
+            sleep(1)
+            center = pyautogui.center(
+                pyautogui.locateOnScreen(
+                    'elements-images/arroba-button2.png', confidence=0.6
+                )
             )
-        )
-        pyautogui.moveTo(center.x, center.y)
-        sleep(1)
-        pyautogui.click(center.x, center.y)
-        sleep(1)
+            pyautogui.moveTo(center.x, center.y)
+            pyautogui.dragTo(
+                arroba_position.left + 200,
+                arroba_position.top,
+                1,
+                button='left',
+            )
+            sleep(1)
+            pyautogui.moveTo(
+                arroba_position.left + 130,
+                arroba_position.top,
+            )
+            pyautogui.click(
+                arroba_position.left + 130,
+                arroba_position.top,
+            )
+            sleep(1)
+        self.lazy_click('elements-images/add-story-button.png', confidence=0.9)
+
+    def lazy_click(self, image_path: str, confidence: float):
+        point = pyautogui.locateOnScreen(image_path, confidence=confidence)
+        pyautogui.moveTo(point.left, point.top)
+        pyautogui.click(point.left, point.top)
+        return point
 
     def make_login(self, login: str, password: str) -> None:
         self.driver.get('https://www.instagram.com/accounts/login/')
-        self.find_element('input[name=username]').send_keys(login)
+        self.find_element('input[name=username]', wait=60).send_keys(login)
         input_password = self.find_element('input[name=password]')
         input_password.send_keys(password)
         input_password.submit()
