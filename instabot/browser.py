@@ -44,10 +44,13 @@ class Browser:
         self.lazy_click('elements-images/story-button.png', 0.7)
         sleep(3)
         pyautogui.hotkey('ctrl', 'l')
-        pyautogui.write(media_path)
         if os.name == 'nt':
-            pyautogui.hotkey('alt', 'shift', 'a')
+            pyautogui.write(str(Path(media_path).parent))
+            pyautogui.press('enter')
+            sleep(1)
+            pyautogui.write(str(Path(media_path).name))
         else:
+            pyautogui.write(media_path)
             pyautogui.press('enter')
         for e, mention in enumerate(mentions):
             while True:
