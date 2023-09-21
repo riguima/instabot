@@ -79,7 +79,7 @@ class MainWindow(QtWidgets.QWidget):
             self.browser.driver.get('chrome-extension://bcocdbombenodlegijagbhdjbifpiijp/inssist.html')
             self.message_box.setText('Aperte Ok quando a página carregar')
             self.message_box.exec()
-            for file_path in list(self.file_dialog_line_edit.text()):
+            for file_path in self.file_dialog_line_edit.text().split(';'):
                 self.browser.post_story(
                     file_path,
                     self.mentions_line_edit.text().replace('@', '').split()

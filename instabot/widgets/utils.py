@@ -16,10 +16,10 @@ class FileDialog(QtWidgets.QFileDialog):
 
     @Slot()
     def set_line_edit_path(self) -> None:
-        self.line_edit.setText(
-            str(
-                QtWidgets.QFileDialog.getOpenFileNames(
-                    self.parent_widget, 'Selecionar'
-                )[0]
-            )
-        )
+        filenames = QtWidgets.QFileDialog.getOpenFileNames(
+            self.parent_widget, 'Selecionar'
+        )[0]
+        result = ''
+        for filename in filenames:
+            result += filename + ';'
+        self.line_edit.setText(result)
