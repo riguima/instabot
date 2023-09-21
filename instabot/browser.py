@@ -50,6 +50,7 @@ class Browser:
             sleep(1)
             pyautogui.hotkey('alt', 'shift', 'n')
             pyautogui.write(str(Path(media_path).name))
+            pyautogui.press('enter')
         else:
             pyautogui.write(media_path)
             pyautogui.press('enter')
