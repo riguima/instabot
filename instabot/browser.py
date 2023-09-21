@@ -39,6 +39,7 @@ class Browser:
 
     def post_story(self, media_path: str, mentions: list[str] = []) -> None:
         self.lazy_click('elements-images/plus-button.png', 0.9)
+        sleep(1)
         self.lazy_click('elements-images/story-button.png', 0.7)
         sleep(3)
         pyautogui.write(media_path)
