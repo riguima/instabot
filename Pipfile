@@ -11,7 +11,7 @@ pynput = "*"
 pyautogui = "*"
 undetected-chromedriver = "*"
 opencv-python = "*"
-pysimplegui = "*"
+pyside6 = "*"
 
 [dev-packages]
 
