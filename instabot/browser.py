@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from selenium.webdriver import Chrome
@@ -44,7 +45,10 @@ class Browser:
         sleep(3)
         pyautogui.hotkey('ctrl', 'l')
         pyautogui.write(media_path)
-        pyautogui.press('enter')
+        if os.name == 'nt':
+            pyautogui.hotkey('alt', 'shift', 'a')
+        else:
+            pyautogui.press('enter')
         for e, mention in enumerate(mentions):
             while True:
                 try:
