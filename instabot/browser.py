@@ -42,6 +42,7 @@ class Browser:
         sleep(1)
         self.lazy_click('elements-images/story-button.png', 0.7)
         sleep(3)
+        pyautogui.hotkey('ctrl', 'l')
         pyautogui.write(media_path)
         pyautogui.press('enter')
         for e, mention in enumerate(mentions):
