@@ -48,6 +48,7 @@ class Browser:
             pyautogui.write(str(Path(media_path).parent))
             pyautogui.press('enter')
             sleep(1)
+            pyautogui.press('tab')
             pyautogui.write(str(Path(media_path).name))
         else:
             pyautogui.write(media_path)
