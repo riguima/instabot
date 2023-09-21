@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -13,7 +15,7 @@ import pyautogui
 class Browser:
     def __init__(self, user_data_dir: str, headless: bool = False) -> None:
         options = Options()
-        options.add_argument(f'--user-data-dir={user_data_dir}')
+        options.add_argument(f'--user-data-dir={Path(user_data_dir).absolute()}')
         options.add_extension('chrome-extensions/inssist.crx')
         if headless:
             options.add_argument('--headless')
