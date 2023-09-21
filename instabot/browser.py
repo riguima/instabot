@@ -66,7 +66,7 @@ class Browser:
             else:
                 pyautogui.press('enter')
                 pyautogui.write(f'@{mention}')
-            sleep(1)
+            sleep(2)
             pyautogui.click(arroba_position.left - 200, arroba_position.top)
             sleep(1)
             center = pyautogui.center(
