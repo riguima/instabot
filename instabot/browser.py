@@ -38,19 +38,9 @@ class Browser:
             )
 
     def post_story(self, media_path: str, mentions: list[str] = []) -> None:
-        while True:
-            try:
-                self.lazy_click('elements-images/plus-button.png', 0.9)
-            except:
-                break
-            while True:
-                try:
-                    self.lazy_click('elements-images/story-button.png', 0.7)
-                    sleep(3)
-                    break
-                except:
-                    continue
-        pyautogui.hotkey('ctrl', 'l')
+        self.lazy_click('elements-images/plus-button.png', 0.9)
+        self.lazy_click('elements-images/story-button.png', 0.7)
+        sleep(3)
         pyautogui.write(media_path)
         pyautogui.press('enter')
         for e, mention in enumerate(mentions):
