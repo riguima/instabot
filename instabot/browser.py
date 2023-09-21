@@ -13,7 +13,12 @@ import pyautogui
 
 
 class Browser:
-    def __init__(self, user_data_dir: str, headless: bool = False) -> None:
+    def __init__(
+        self,
+        user_data_dir: str,
+        headless: bool = False,
+        executable_path: str = None,
+    ) -> None:
         options = Options()
         options.add_argument(f'--user-data-dir={Path(user_data_dir).absolute()}')
         options.add_extension('chrome-extensions/inssist.crx')
@@ -21,10 +26,16 @@ class Browser:
             options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
-        self.driver = Chrome(
-            service=Service(ChromeDriverManager().install()),
-            options=options,
-        )
+        if executable_path:
+            self.driver = Chrome(
+                service=Service(executable_path=str(Path(executable_path).absolute())),
+                options=options,
+            )
+        else:
+            self.driver = Chrome(
+                service=Service(ChromeDriverManager().install()),
+                options=options,
+            )
 
     def post_story(self, media_path: str, mentions: list[str] = []) -> None:
         while True:
