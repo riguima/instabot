@@ -5,9 +5,9 @@ from PySide6.QtCore import Slot
 from sqlalchemy import select
 
 from instabot.browser import Browser
-from instabot.widgets.utils import FileDialog
-from instabot.models import Account
 from instabot.database import Session
+from instabot.models import Account
+from instabot.widgets.utils import FileDialog
 
 
 class MainWindow(QtWidgets.QWidget):
