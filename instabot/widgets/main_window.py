@@ -1,27 +1,35 @@
-from pathlib import Path
-
-from PySide6.QtCore import Slot
+from instagrapi import Client
+from instagrapi.exceptions import BadPassword
 from PySide6 import QtWidgets
-import toml
+from PySide6.QtCore import Slot
 
-from instabot.widgets.utils import FileDialog
 from instabot.browser import Browser
-
-
-secrets = toml.load(open('.secrets.toml')) if Path('.secrets.toml').exists() else {}
+from instabot.widgets.utils import FileDialog
 
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self) -> None:
         super().__init__()
         self.setStyleSheet('font-size: 20px;')
-        self.setFixedSize(800, 200)
+        self.setFixedSize(800, 400)
 
-        self.browser = None
+        self.browser = Browser()
         self.message_box = QtWidgets.QMessageBox()
+
+        self.login_label = QtWidgets.QLabel('Login')
+        self.login_line_edit = QtWidgets.QLineEdit()
+
+        self.password_label = QtWidgets.QLabel('Senha')
+        self.password_line_edit = QtWidgets.QLineEdit()
+        self.password_line_edit.setEchoMode(
+            QtWidgets.QLineEdit.EchoMode.Password
+        )
 
         self.mentions_label = QtWidgets.QLabel('Menções')
         self.mentions_line_edit = QtWidgets.QLineEdit()
+
+        self.links_label = QtWidgets.QLabel('Links')
+        self.links_line_edit = QtWidgets.QLineEdit()
 
         self.file_dialog_label = QtWidgets.QLabel('Imagens/Videos')
         self.file_dialog_line_edit = QtWidgets.QLineEdit()
@@ -38,66 +46,39 @@ class MainWindow(QtWidgets.QWidget):
         self.run_button = QtWidgets.QPushButton('Rodar')
         self.run_button.clicked.connect(self.run)
 
-        self.run_layout = QtWidgets.QVBoxLayout()
-        self.run_layout.addWidget(self.mentions_label)
-        self.run_layout.addWidget(self.mentions_line_edit)
-        self.run_layout.addWidget(self.file_dialog_label)
-        self.run_layout.addLayout(self.file_dialog_layout)
-        self.run_layout.addWidget(self.run_button)
-
-        self.login_label = QtWidgets.QLabel('Login')
-        self.login_line_edit = QtWidgets.QLineEdit()
-
-        self.password_label = QtWidgets.QLabel('Senha')
-        self.password_line_edit = QtWidgets.QLineEdit()
-        self.password_line_edit.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
-
-        self.login_button = QtWidgets.QPushButton('Fazer login')
-        self.login_button.clicked.connect(self.make_login)
-
-        self.login_layout = QtWidgets.QVBoxLayout()
-        self.login_layout.addWidget(self.login_label)
-        self.login_layout.addWidget(self.login_line_edit)
-        self.login_layout.addWidget(self.password_label)
-        self.login_layout.addWidget(self.password_line_edit)
-        self.login_layout.addWidget(self.login_button)
-
-        self.main_layout = QtWidgets.QHBoxLayout(self)
-        self.main_layout.addLayout(self.run_layout)
-        self.main_layout.addLayout(self.login_layout)
+        self.main_layout = QtWidgets.QVBoxLayout(self)
+        self.main_layout.addWidget(self.login_label)
+        self.main_layout.addWidget(self.login_line_edit)
+        self.main_layout.addWidget(self.password_label)
+        self.main_layout.addWidget(self.password_line_edit)
+        self.main_layout.addWidget(self.mentions_label)
+        self.main_layout.addWidget(self.mentions_line_edit)
+        self.main_layout.addWidget(self.links_label)
+        self.main_layout.addWidget(self.links_line_edit)
+        self.main_layout.addWidget(self.file_dialog_label)
+        self.main_layout.addLayout(self.file_dialog_layout)
+        self.main_layout.addWidget(self.run_button)
 
     @Slot()
     def run(self) -> None:
-        if secrets.get('login') is None:
-            self.message_box.setText('Primeiro faça o login')
-            self.message_box.show()
-        else:
-            if self.browser is None:
-                self.browser = Browser(secrets['login'] + '_user_data')
-            if not self.browser.is_logged():
-                self.browser.make_login(secrets['login'], secrets['password'])
-            self.browser.driver.get('chrome-extension://bcocdbombenodlegijagbhdjbifpiijp/inssist.html')
-            self.message_box.setText('Aperte Ok quando a página carregar')
-            self.message_box.exec()
-            for file_path in self.file_dialog_line_edit.text().split(';'):
-                self.browser.post_story(
-                    file_path,
-                    self.mentions_line_edit.text().replace('@', '').split()
-                )
-
-    @Slot()
-    def make_login(self) -> None:
-        self.browser = Browser(self.login_line_edit.text() + '_user_data')
-        if not self.browser.is_logged():
-            self.browser.make_login(
-                self.login_line_edit.text(),
-                self.password_line_edit.text(),
+        try:
+            client = Client()
+            client.login(
+                self.login_line_edit.text(), self.password_line_edit.text()
             )
-        if self.browser.is_logged():
-            self.message_box.setText('Login realizado com sucesso')
-            secrets['login'] = self.login_line_edit.text()
-            secrets['password'] = self.password_line_edit.text()
-            toml.dump(secrets, open('.secrets.toml', 'w'))
-        else:
+            for file_path in [
+                p for p in self.file_dialog_line_edit.text().split(';') if p
+            ]:
+                self.browser.post_story(
+                    client,
+                    file_path,
+                    mentions=self.mentions_line_edit.text()
+                    .replace('@', '')
+                    .split(),
+                    links=self.links_line_edit.text().split(),
+                )
+            self.message_box.setText('Finalizado')
+            self.message_box.show()
+        except BadPassword:
             self.message_box.setText('Login inválido')
-        self.message_box.show()
+            self.message_box.show()

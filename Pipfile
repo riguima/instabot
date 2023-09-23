@@ -12,8 +12,13 @@ pyautogui = "*"
 undetected-chromedriver = "*"
 opencv-python = "*"
 pyside6 = "*"
+instagrapi = "*"
+moviepy = "*"
 
 [dev-packages]
+ruff = "*"
+isort = "*"
+blue = "*"
 
 [requires]
 python_version = "3.11"
