@@ -19,8 +19,14 @@ class Browser:
         function(
             str(Path(media_path).absolute()),
             mentions=[
-                StoryMention(user=client.user_info_by_username(mention))
+                StoryMention(
+                    user=client.user_info_by_username(mention),
+                    x=0.1,
+                    y=0.1,
+                    width=0.1,
+                    height=0.1,
+                )
                 for mention in mentions
             ],
-            links=[StoryLink(webUri=link) for link in links],
+            links=[StoryLink(webUri=link, x=0.5, y=0.75) for link in links],
         )

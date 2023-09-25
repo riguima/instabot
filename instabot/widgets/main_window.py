@@ -130,6 +130,8 @@ class MainWindow(QtWidgets.QWidget):
         except (BadPassword, ProxyAddressIsBlocked):
             self.message_box.setText('Login inválido')
             self.message_box.show()
+        self.login_line_edit.setText('')
+        self.password_line_edit.setText('')
 
     @Slot()
     def remove_account(self) -> None:
